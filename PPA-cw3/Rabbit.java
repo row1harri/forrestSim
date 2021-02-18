@@ -1,6 +1,6 @@
 import java.util.List;
 import java.util.Random;
-
+import java.util.Iterator;
 /**
  * A simple model of a rabbit.
  * Rabbits age, move, breed, and die.
@@ -17,7 +17,7 @@ public class Rabbit extends Animal
     // The age to which a rabbit can live.
     private static final int MAX_AGE = 40;
     // The likelihood of a rabbit breeding.
-    private static final double BREEDING_PROBABILITY = 0.12;
+    private static final double BREEDING_PROBABILITY = 1; //0.12 original
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 4;
     // A shared random number generator to control breeding.
@@ -88,14 +88,34 @@ public class Rabbit extends Animal
     {
         // New rabbits are born into adjacent locations.
         // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Rabbit young = new Rabbit(false, field, loc);
-            newRabbits.add(young);
+        if (canMate()){
+            Field field = getField();
+            List<Location> free = field.getFreeAdjacentLocations(getLocation());
+            int births = breed();
+            for(int b = 0; b < births && free.size() > 0; b++) {
+                Location loc = free.remove(0);
+                Rabbit young = new Rabbit(false, field, loc);
+                newRabbits.add(young);
+            }
         }
+    }
+    
+    private boolean canMate(){
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        while(it.hasNext()) {
+            Location where = it.next();
+            Object animal = field.getObjectAt(where);
+            if(animal instanceof Rabbit) {
+                Rabbit rabbit = (Rabbit) animal;
+                if(rabbit.isAlive()&(rabbit.getGender()!=this.getGender())) { 
+                    return true;
+                }
+            }
+            else return false;
+        }
+        return false;
     }
         
     /**
@@ -111,7 +131,9 @@ public class Rabbit extends Animal
         }
         return births;
     }
-
+    
+    
+    
     /**
      * A rabbit can breed if it has reached the breeding age.
      * @return true if the rabbit can breed, false otherwise.

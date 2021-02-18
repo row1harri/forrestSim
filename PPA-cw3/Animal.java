@@ -17,7 +17,8 @@ public abstract class Animal
     //variable that holds the gender value of an animal 0-male 1-female
     private int gender;
     
-    private static final Random rand = Randomizer.getRandom();
+    private Random rand;
+    
     
     /**
      * Create a new animal at location in field.
@@ -30,6 +31,7 @@ public abstract class Animal
         alive = true;
         this.field = field;
         setLocation(location);
+        setGender();
     }
     
     /**
@@ -47,7 +49,16 @@ public abstract class Animal
     {
         return alive;
     }
-
+    
+    protected void setGender()
+    {
+        Random rand = Randomizer.getRandom();     
+        gender = rand.nextInt(2);
+    }
+    
+    protected int getGender(){
+        return gender;
+    }
     /**
      * Indicate that the animal is no longer alive.
      * It is removed from the field.
