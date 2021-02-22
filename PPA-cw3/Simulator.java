@@ -19,11 +19,20 @@ public class Simulator
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 80;
     // The probability that a fox will be created in any given grid position.
-    private static final double FOX_CREATION_PROBABILITY = 0.02;
+    private static final double FOX_CREATION_PROBABILITY = 0.01;
     // The probability that a rabbit will be created in any given grid position.
-    private static final double RABBIT_CREATION_PROBABILITY = 0.08;   
-    // The probability that a hen will be created in any given grid position.
-    private static final double Eagle_CREATION_PROBABILITY = 0.05;    
+    private static final double RABBIT_CREATION_PROBABILITY = 0.1;   
+    // The probability that a eagle will be created in any given grid position.
+    private static final double Eagle_CREATION_PROBABILITY = 0.03;
+    // The probability that a wolf will be created in any given grid position.
+    private static final double WOLF_CREATION_PROBABILITY = 0.03;
+    // The probability that a deer will be created in any given grid position.
+    private static final double DEER_CREATION_PROBABILITY = 0.09;
+    // The probability that a plant will be created in any given grid position.
+    private static final double PLANT_CREATION_PROBABILITY = 0.0;
+    
+    
+    
 
 
     // List of animals in the field.
@@ -34,7 +43,10 @@ public class Simulator
     private int step;
     // A graphical view of the simulation.
     private SimulatorView view;
-    
+    //keeps track of wether it is day or night,0-day,1-night
+    private boolean isDay = true;
+    // List of plants in the field.
+    private List<Plant> plants;
     /**
      * Construct a simulation field with default size.
      */
@@ -65,6 +77,9 @@ public class Simulator
         view.setColor(Rabbit.class, Color.ORANGE);
         view.setColor(Fox.class, Color.BLUE);
         view.setColor(Eagle.class, Color.RED);
+        view.setColor(Wolf.class, Color.BLACK);
+        view.setColor(Deer.class, Color.YELLOW);
+        view.setColor(Plant.class, Color.GREEN);
         
         // Setup a valid starting point.
         reset();
@@ -88,7 +103,7 @@ public class Simulator
     {
         for(int step = 1; step <= numSteps && view.isViable(field); step++) {
             simulateOneStep();
-            // delay(60);   // uncomment this to run more slowly
+            delay(60);   // uncomment this to run more slowly
         }
     }
     
@@ -100,7 +115,7 @@ public class Simulator
     public void simulateOneStep()
     {
         step++;
-
+        changeTimeOfDay();
         // Provide space for newborn animals.
         List<Animal> newAnimals = new ArrayList<>();        
         // Let all rabbits act.
@@ -155,6 +170,21 @@ public class Simulator
                     Eagle eagle = new Eagle(true, field, location);
                     animals.add(eagle);
                 }
+                else if(rand.nextDouble() <= WOLF_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Wolf wolf = new Wolf(true, field, location);
+                    animals.add(wolf);
+                }
+                else if(rand.nextDouble() <= DEER_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Deer deer = new Deer(true, field, location);
+                    animals.add(deer);
+                }
+                else if(rand.nextDouble() <= PLANT_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Plant plant = new Plant(true, field, location);
+                    plants.add(plant);
+                }
                 // else leave the location empty.
             }
         }
@@ -172,5 +202,25 @@ public class Simulator
         catch (InterruptedException ie) {
             // wake up
         }
-    }	
+    }
+    /**
+     * switches the time of day in the simulation 
+     * between day and night
+     */
+    private void changeTimeOfDay(){
+        if ((step-20) % 20==0){
+            isDay = !isDay; 
+            if (isDay){
+            System.out.println("day");
+            }
+            else {System.out.println("night");}
+        }   
+    }
+    
+    
+    public boolean getTimeOfDay(){
+        return isDay;
+    }
+    
+    
 }

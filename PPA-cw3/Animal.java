@@ -16,6 +16,8 @@ public abstract class Animal
     private Location location;
     //variable that holds the gender value of an animal 0-male 1-female
     private int gender;
+    //tracks if an animal is sleeping or not
+    private boolean isSleeping;
     
     private Random rand;
     
@@ -103,6 +105,8 @@ public abstract class Animal
     {
         return field;
     }
-    
-    
+        
+    public void setIsSleeping(boolean isSleeping_){
+        isSleeping = isSleeping_;
+    }
 }
