@@ -25,6 +25,4 @@ comment7.text=\r\n\ Generate\ a\ number\ representing\ the\ number\ of\ births,\
 comment8.params=
 comment8.target=boolean\ canBreed()
 comment8.text=\r\n\ A\ fox\ can\ breed\ if\ it\ has\ reached\ the\ breeding\ age.\r\n
-comment9.params=
-comment9.target=void\ sleep()
-numComments=10
+numComments=9

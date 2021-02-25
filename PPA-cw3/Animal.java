@@ -14,6 +14,8 @@ public abstract class Animal
     private Field field;
     // The animal's position in the field.
     private Location location;
+    // The simulator the animal is in
+    protected Simulator simulator;
     //variable that holds the gender value of an animal 0-male 1-female
     private int gender;
     //tracks if an animal is sleeping or not
@@ -104,9 +106,13 @@ public abstract class Animal
     protected Field getField()
     {
         return field;
+    }        
+    
+    public void sleep(boolean status){
+        isSleeping = status;
     }
-        
-    public void setIsSleeping(boolean isSleeping_){
-        isSleeping = isSleeping_;
+    
+    public boolean getIsSleeping(){
+        return isSleeping;
     }
 }

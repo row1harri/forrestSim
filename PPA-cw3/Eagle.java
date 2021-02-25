@@ -20,7 +20,7 @@ public class Eagle extends Animal
     // The likelihood of a eagle breeding.
     private static final double BREEDING_PROBABILITY = 0.08;
     // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 2;
+    private static final int MAX_LITTER_SIZE = 5;
     // The food value of a single rabbit. In effect, this is the
     // number of steps a eagle can go before it has to eat again.
     private static final int RABBIT_FOOD_VALUE = 10;//9

@@ -15,19 +15,19 @@ public class Simulator
 {
     // Constants representing configuration information for the simulation.
     // The default width for the grid.
-    private static final int DEFAULT_WIDTH = 120;
+    private static final int DEFAULT_WIDTH = 200;
     // The default depth of the grid.
-    private static final int DEFAULT_DEPTH = 80;
+    private static final int DEFAULT_DEPTH = 100;
     // The probability that a fox will be created in any given grid position.
-    private static final double FOX_CREATION_PROBABILITY = 0.01;
+    private static final double FOX_CREATION_PROBABILITY = 0.02;
     // The probability that a rabbit will be created in any given grid position.
-    private static final double RABBIT_CREATION_PROBABILITY = 0.1;   
+    private static final double RABBIT_CREATION_PROBABILITY = 0.04;   
     // The probability that a eagle will be created in any given grid position.
-    private static final double Eagle_CREATION_PROBABILITY = 0.03;
+    private static final double EAGLE_CREATION_PROBABILITY = 0.01;
     // The probability that a wolf will be created in any given grid position.
     private static final double WOLF_CREATION_PROBABILITY = 0.03;
     // The probability that a deer will be created in any given grid position.
-    private static final double DEER_CREATION_PROBABILITY = 0.09;
+    private static final double DEER_CREATION_PROBABILITY = 0.035;
     // The probability that a plant will be created in any given grid position.
     private static final double PLANT_CREATION_PROBABILITY = 0.0;
     
@@ -103,7 +103,7 @@ public class Simulator
     {
         for(int step = 1; step <= numSteps && view.isViable(field); step++) {
             simulateOneStep();
-            delay(60);   // uncomment this to run more slowly
+            // delay(60);   // uncomment this to run more slowly
         }
     }
     
@@ -116,6 +116,8 @@ public class Simulator
     {
         step++;
         changeTimeOfDay();
+        
+        nightAct();
         // Provide space for newborn animals.
         List<Animal> newAnimals = new ArrayList<>();        
         // Let all rabbits act.
@@ -165,7 +167,7 @@ public class Simulator
                     Rabbit rabbit = new Rabbit(true, field, location);
                     animals.add(rabbit);
                 }
-                else if(rand.nextDouble() <= Eagle_CREATION_PROBABILITY) {
+                else if(rand.nextDouble() <= EAGLE_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
                     Eagle eagle = new Eagle(true, field, location);
                     animals.add(eagle);
@@ -209,18 +211,38 @@ public class Simulator
      */
     private void changeTimeOfDay(){
         if ((step-20) % 20==0){
-            isDay = !isDay; 
-            if (isDay){
-            System.out.println("day");
-            }
-            else {System.out.println("night");}
+            isDay = !isDay;           
         }   
     }
     
-    
-    public boolean getTimeOfDay(){
+    /**
+     * @ returns wether or not it is day-time in the simulation
+     */
+    public boolean getIsDay(){
         return isDay;
     }
     
+    /**
+     * changes the behaviour of animals during night-time
+     */
+    public void nightAct(){
+        if(getIsDay()){
+            for(Animal animal: animals ){
+                
+            if(animal instanceof Fox){
+                animal.sleep(true);
+            }
+            }
+        }
+        else{
+            for(Animal animal: animals ){
+                
+            if(animal instanceof Fox){
+                animal.sleep(false);
+            }
+            }
+        }
+    
+    }
     
 }

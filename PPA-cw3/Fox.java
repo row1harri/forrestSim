@@ -18,7 +18,7 @@ public class Fox extends Animal
     // The age to which a fox can live.
     private static final int MAX_AGE = 150;
     // The likelihood of a fox breeding.
-    private static final double BREEDING_PROBABILITY = 0.08;
+    private static final double BREEDING_PROBABILITY = 0.8;
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 2;
     // The food value of a single rabbit. In effect, this is the
@@ -64,6 +64,7 @@ public class Fox extends Animal
     public void act(List<Animal> newFoxes)
     {
         incrementAge();
+        if (!getIsSleeping()){
         incrementHunger();
         if(isAlive()) {
             giveBirth(newFoxes);            
@@ -82,6 +83,7 @@ public class Fox extends Animal
                 setDead();
             }
         }
+    }
     }
 
     /**
@@ -113,6 +115,8 @@ public class Fox extends Animal
      */
     private Location findFood()
     {
+        
+        
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
@@ -129,6 +133,7 @@ public class Fox extends Animal
             }
         }
         return null;
+        
     }
     
     /**
@@ -172,7 +177,5 @@ public class Fox extends Animal
         return age >= BREEDING_AGE;
     }
     
-    private void sleep(){
-      
-    }
+    
 }
