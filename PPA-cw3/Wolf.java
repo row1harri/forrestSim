@@ -61,14 +61,15 @@ public class Wolf extends Animal
      * @param field The field currently occupied.
      * @param newwolves A list to return newly born wolves.
      */
-    public void act(List<Animal> newwolves)
+    public void act(List<Animal> newWolves)
     {
         incrementAge();
         incrementHunger();
         if(isAlive()) {
-            giveBirth(newwolves);            
+            giveBirth(newWolves);            
             // Move towards a source of food if found.
             Location newLocation = findFood();
+            spreadDisease();
             if(newLocation == null) { 
                 // No food found - try to move to a free location.
                 newLocation = getField().freeAdjacentLocation(getLocation());
@@ -90,6 +91,9 @@ public class Wolf extends Animal
     private void incrementAge()
     {
         age++;
+        if(isSick()){
+            age += 2;
+        }
         if(age > MAX_AGE) {
             setDead();
         }
@@ -151,6 +155,29 @@ public class Wolf extends Animal
     }
         
     /**
+     * Checks wether or not the wolf is in an adjacent location to another
+     * wolf of the opposite gender.
+     * @return true if adjacent to another wolf of the opposite gender,false otherwise
+     */
+    private boolean canMate(){
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        while(it.hasNext()) {
+            Location where = it.next();
+            Object animal = field.getObjectAt(where);
+            if(animal instanceof Wolf) {
+                Wolf wolf = (Wolf) animal;
+                if(wolf.isAlive()&&(wolf.getGender()!=this.getGender())) { 
+                    return true;
+                }
+            }
+            else return false;
+        }
+        return false;
+    }
+    
+    /**
      * Generate a number representing the number of births,
      * if it can breed.
      * @return The number of births (may be zero).
@@ -169,6 +196,6 @@ public class Wolf extends Animal
      */
     private boolean canBreed()
     {
-        return age >= BREEDING_AGE;
+        return ((age >= BREEDING_AGE) && canMate());
     }
 }

@@ -1,6 +1,6 @@
 import java.util.List;
 import java.util.Random;
-
+import java.util.Iterator;
 /**
  * A simple model of a deer.
  * deers age, move, breed, and die.
@@ -57,6 +57,7 @@ public class Deer extends Animal
             giveBirth(newDeers);            
             // Try to move into a free location.
             Location newLocation = getField().freeAdjacentLocation(getLocation());
+            spreadDisease();
             if(newLocation != null) {
                 setLocation(newLocation);
             }
@@ -74,6 +75,9 @@ public class Deer extends Animal
     private void incrementAge()
     {
         age++;
+        if(isSick()){
+            age += 2;
+        }
         if(age > MAX_AGE) {
             setDead();
         }
@@ -97,7 +101,30 @@ public class Deer extends Animal
             newDeers.add(young);
         }
     }
-        
+    
+    /**
+     * Checks wether or not the deer is in an adjacent location to another
+     * deer of the opposite gender.
+     * @return true if adjacent to another deer of the opposite gender,false otherwise
+     */
+    private boolean canMate(){
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        while(it.hasNext()) {
+            Location where = it.next();
+            Object animal = field.getObjectAt(where);
+            if(animal instanceof Deer) {
+                Deer deer = (Deer) animal;
+                if(deer.isAlive()&&(deer.getGender()!=this.getGender())) { 
+                    return true;
+                }
+            }
+            else return false;
+        }
+        return false;
+    }
+    
     /**
      * Generate a number representing the number of births,
      * if it can breed.
@@ -118,6 +145,6 @@ public class Deer extends Animal
      */
     private boolean canBreed()
     {
-        return age >= BREEDING_AGE;
+        return ((age >= BREEDING_AGE) && canMate());
     }
 }

@@ -53,10 +53,12 @@ public class Rabbit extends Animal
     public void act(List<Animal> newRabbits)
     {
         incrementAge();
+   
         if(isAlive()) {
             giveBirth(newRabbits);            
             // Try to move into a free location.
             Location newLocation = getField().freeAdjacentLocation(getLocation());
+            spreadDisease();
             if(newLocation != null) {
                 setLocation(newLocation);
             }
@@ -70,10 +72,14 @@ public class Rabbit extends Animal
     /**
      * Increase the age.
      * This could result in the rabbit's death.
+     * If an animal is sick, it is made to age faster
      */
     private void incrementAge()
     {
         age++;
+        if(isSick()){
+            age += 2;
+        }
         if(age > MAX_AGE) {
             setDead();
         }
@@ -88,7 +94,6 @@ public class Rabbit extends Animal
     {
         // New rabbits are born into adjacent locations.
         // Get a list of adjacent free locations.
-        if (canMate()){
             Field field = getField();
             List<Location> free = field.getFreeAdjacentLocations(getLocation());
             int births = breed();
@@ -96,10 +101,14 @@ public class Rabbit extends Animal
                 Location loc = free.remove(0);
                 Rabbit young = new Rabbit(false, field, loc);
                 newRabbits.add(young);
-            }
+            
         }
     }
-    
+    /**
+     * Checks wether or not the rabbit is in an adjacent location to another
+     * rabbit of the opposite gender.
+     * @return true if adjacent to another rabbit of the opposite gender,false otherwise
+     */
     private boolean canMate(){
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
@@ -109,7 +118,7 @@ public class Rabbit extends Animal
             Object animal = field.getObjectAt(where);
             if(animal instanceof Rabbit) {
                 Rabbit rabbit = (Rabbit) animal;
-                if(rabbit.isAlive()&(rabbit.getGender()!=this.getGender())) { 
+                if(rabbit.isAlive()&&(rabbit.getGender()!=this.getGender())) { 
                     return true;
                 }
             }
@@ -132,14 +141,13 @@ public class Rabbit extends Animal
         return births;
     }
     
-    
-    
     /**
-     * A rabbit can breed if it has reached the breeding age.
+     * A rabbit can breed if it has reached the breeding age and is near
+     * a rabitt of the opposite sex
      * @return true if the rabbit can breed, false otherwise.
      */
     private boolean canBreed()
     {
-        return age >= BREEDING_AGE;
+        return ((age >= BREEDING_AGE) && canMate());
     }
 }

@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.Random;
+import java.util.Iterator;
 /**
  * A class representing shared characteristics of animals.
  * 
@@ -16,11 +17,15 @@ public abstract class Animal
     private Location location;
     // The simulator the animal is in
     protected Simulator simulator;
-    //variable that holds the gender value of an animal 0-male 1-female
+    // Variable that holds the gender value of an animal 0-male 1-female
     private int gender;
-    //tracks if an animal is sleeping or not
+    // Tracks if an animal is sleeping or not
     private boolean isSleeping;
-    
+    // Tracks if the animal is sick or not
+    private boolean hasDisease;
+    // The probability of a sick animal spreading the disease
+    private double diseaseSpreadProbability = 0.8;
+    // random number generator used for this class
     private Random rand;
     
     
@@ -36,6 +41,7 @@ public abstract class Animal
         this.field = field;
         setLocation(location);
         setGender();
+        setDisease();
     }
     
     /**
@@ -53,13 +59,18 @@ public abstract class Animal
     {
         return alive;
     }
-    
+    /**
+     * method used to set the gender of an animal upon its creation
+     */
     protected void setGender()
     {
         Random rand = Randomizer.getRandom();     
         gender = rand.nextInt(2);
     }
-    
+    /**
+     * return thje gender of the animal
+     * @return 0 if the animal is male and 1 if the animal is female
+     */
     protected int getGender(){
         return gender;
     }
@@ -107,12 +118,69 @@ public abstract class Animal
     {
         return field;
     }        
-    
-    public void sleep(boolean status){
+    /**
+     * changes wether or not the animal is sleeping
+     * based on the status parameter
+     * @param status wether or not the animal is to be made to sleep
+     */
+    protected void sleep(boolean status){
         isSleeping = status;
     }
-    
-    public boolean getIsSleeping(){
+    /**
+     * return the animal's isSleeping attribute
+     * @return the animal's isSleeping attribute
+     */
+    protected boolean getIsSleeping(){
         return isSleeping;
     }
+    /**
+     * gives the animal the disease
+     */
+    protected void giveDisease(){
+         hasDisease = true;
+    }
+    /**
+     * return the animal's hasDisease attribute
+     * @return the animal's hasDisease attribute
+     */
+    protected boolean isSick(){
+        return hasDisease;
+    }
+    /**
+     * method used to make some animals already have
+     * the disease upon creation
+     */
+    protected void setDisease(){
+        Random rand = Randomizer.getRandom();
+        if(rand.nextDouble() <= 0.2 ){
+            giveDisease();
+        }
+    }
+    /**
+     * checks to see if there are animals in adjacent locations
+     * if so then there is a chance that each of those animals will
+     * bee given the disease
+     */
+    protected void spreadDisease(){       
+        if(isSick()){
+            Random rand = Randomizer.getRandom();
+            Field field = getField();
+            List<Location> adjacent = field.adjacentLocations(getLocation());
+            Iterator<Location> it = adjacent.iterator();
+            while(it.hasNext()) {
+                Location where = it.next();
+                Object animal = field.getObjectAt(where);
+                if(animal instanceof Animal) {
+                    Animal animal_ = (Animal) animal;
+                    if(animal_.isAlive()) {
+                        if(rand.nextDouble() <= diseaseSpreadProbability){
+                            animal_.giveDisease();
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    
 }

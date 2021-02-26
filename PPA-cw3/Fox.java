@@ -70,6 +70,7 @@ public class Fox extends Animal
             giveBirth(newFoxes);            
             // Move towards a source of food if found.
             Location newLocation = findFood();
+            spreadDisease();
             if(newLocation == null) { 
                 // No food found - try to move to a free location.
                 newLocation = getField().freeAdjacentLocation(getLocation());
@@ -92,6 +93,9 @@ public class Fox extends Animal
     private void incrementAge()
     {
         age++;
+        if(isSick()){
+            age += 2;
+        }
         if(age > MAX_AGE) {
             setDead();
         }
@@ -154,7 +158,30 @@ public class Fox extends Animal
             newFoxes.add(young);
         }
     }
-        
+    
+    /**
+     * Checks wether or not the fox is in an adjacent location to another
+     * fox of the opposite gender.
+     * @return true if adjacent to another fox of the opposite gender,false otherwise
+     */
+    private boolean canMate(){
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        while(it.hasNext()) {
+            Location where = it.next();
+            Object animal = field.getObjectAt(where);
+            if(animal instanceof Fox) {
+                Fox fox = (Fox) animal;
+                if(fox.isAlive()&&(fox.getGender()!=this.getGender())) { 
+                    return true;
+                }
+            }
+            else return false;
+        }
+        return false;
+    }
+    
     /**
      * Generate a number representing the number of births,
      * if it can breed.
@@ -174,7 +201,7 @@ public class Fox extends Animal
      */
     private boolean canBreed()
     {
-        return age >= BREEDING_AGE;
+        return ((age >= BREEDING_AGE) && canMate());
     }
     
     
