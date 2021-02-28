@@ -1,0 +1,22 @@
+#BlueJ class context
+comment0.target=Deer
+comment0.text=\n\ A\ simple\ model\ of\ a\ deer.\n\ deers\ age,\ move,\ breed,\ and\ die.\n\ \n\ @author\ David\ J.\ Barnes\ and\ Michael\ K\u00F6lling\n\ @version\ 2016.02.29\ (2)\n
+comment1.params=randomAge\ field\ location
+comment1.target=Deer(boolean,\ Field,\ Location)
+comment1.text=\n\ Create\ a\ new\ deer.\ A\ deer\ may\ be\ created\ with\ age\n\ zero\ (a\ new\ born)\ or\ with\ a\ random\ age.\n\ \n\ @param\ randomAge\ If\ true,\ the\ deer\ will\ have\ a\ random\ age.\n\ @param\ field\ The\ field\ currently\ occupied.\n\ @param\ location\ The\ location\ within\ the\ field.\n
+comment2.params=newDeers
+comment2.target=void\ act(java.util.List)
+comment2.text=\n\ This\ is\ what\ the\ deer\ does\ most\ of\ the\ time\ -\ it\ runs\ \n\ around.\ Sometimes\ it\ will\ breed\ or\ die\ of\ old\ age.\n\ @param\ newdeers\ A\ list\ to\ return\ newly\ born\ deers.\n
+comment3.params=
+comment3.target=void\ incrementAge()
+comment3.text=\n\ Increase\ the\ age.\n\ This\ could\ result\ in\ the\ deer's\ death.\n
+comment4.params=newDeers
+comment4.target=void\ giveBirth(java.util.List)
+comment4.text=\n\ Check\ whether\ or\ not\ this\ deer\ is\ to\ give\ birth\ at\ this\ step.\n\ New\ births\ will\ be\ made\ into\ free\ adjacent\ locations.\n\ @param\ newdeers\ A\ list\ to\ return\ newly\ born\ deers.\n
+comment5.params=
+comment5.target=int\ breed()
+comment5.text=\n\ Generate\ a\ number\ representing\ the\ number\ of\ births,\n\ if\ it\ can\ breed.\n\ @return\ The\ number\ of\ births\ (may\ be\ zero).\n
+comment6.params=
+comment6.target=boolean\ canBreed()
+comment6.text=\n\ A\ deer\ can\ breed\ if\ it\ has\ reached\ the\ breeding\ age.\n\ @return\ true\ if\ the\ deer\ can\ breed,\ false\ otherwise.\n
+numComments=7

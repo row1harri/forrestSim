@@ -1,0 +1,11 @@
+#BlueJ class context
+comment0.target=Plant
+comment0.text=\n\ Write\ a\ description\ of\ class\ plant\ here.\n\n\ @author\ (your\ name)\n\ @version\ (a\ version\ number\ or\ a\ date)\n
+comment1.params=RandomSize\ field\ location
+comment1.target=Plant(java.lang.Boolean,\ Field,\ Location)
+comment1.text=\n\ Constructor\ for\ objects\ of\ class\ plant\n
+comment2.params=
+comment2.target=void\ setEaten()
+comment3.params=newLocation
+comment3.target=void\ setLocation(Location)
+numComments=4
