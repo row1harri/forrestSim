@@ -70,6 +70,7 @@ public class Fox extends Animal
                 giveBirth(newFoxes);            
                 // Move towards a source of food if found.
                 Location newLocation = findFood();
+                spreadDisease();
                 if(newLocation == null) { 
                     // No food found - try to move to a free location.
                     newLocation = getField().freeAdjacentLocation(getLocation());
@@ -92,6 +93,9 @@ public class Fox extends Animal
     private void incrementAge()
     {
         age++;
+        if(isSick()){
+            age += 1;
+        }
         if(age > MAX_AGE) {
             setDead();
         }

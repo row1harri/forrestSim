@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.Random;
+import java.util.Iterator;
 /**
  * A class representing shared characteristics of animals.
  * 
@@ -18,7 +19,11 @@ public abstract class Animal
     private int gender;
     //tracks if an animal is sleeping or not
     private boolean isSleeping;
-    
+    // Tracks if the animal is sick or not
+    private boolean hasDisease = false;
+    // The probability of a sick animal spreading the disease
+    private double diseaseSpreadProbability = 0.05;
+    // random number generator used for this class
     private Random rand;
     
     
@@ -34,6 +39,7 @@ public abstract class Animal
         this.field = field;
         setLocation(location);
         setGender();
+        setDisease();
     }
     
     /**
@@ -120,5 +126,54 @@ public abstract class Animal
      */
     protected boolean getIsSleeping(){
         return isSleeping;
+    }
+    
+    /**
+     * gives the animal the disease
+     */
+    protected void giveDisease(){
+         hasDisease = true;
+    }
+    /**
+     * return the animal's hasDisease attribute
+     * @return the animal's hasDisease attribute
+     */
+    protected boolean isSick(){
+        return hasDisease;
+    }
+    /**
+     * method used to make some animals already have
+     * the disease upon creation
+     */
+    protected void setDisease(){
+        Random rand = Randomizer.getRandom();
+        if(rand.nextDouble() <= diseaseSpreadProbability  ){
+            giveDisease();
+        }
+    }
+    /**
+     * checks to see if there are animals in adjacent locations
+     * if so then there is a chance that each of those animals will
+     * bee given the disease
+     */
+    protected void spreadDisease(){       
+        if(isSick()){
+            Random rand = Randomizer.getRandom();
+            Field field = getField();
+            List<Location> adjacent = field.adjacentLocations(getLocation());
+            Iterator<Location> it = adjacent.iterator();
+            while(it.hasNext()) {
+                Location where = it.next();
+                Object animal = field.getObjectAt(where);
+                if(animal instanceof Animal) {
+                    Animal animal_ = (Animal) animal;
+                    if(animal_.isAlive()) {
+                        if(rand.nextDouble() <= diseaseSpreadProbability){
+                            animal_.giveDisease();
+                        }
+                    }
+                }
+            }
+        }
     }
 }

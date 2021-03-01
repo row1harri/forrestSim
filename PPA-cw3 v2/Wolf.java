@@ -18,7 +18,7 @@ public class Wolf extends Animal
     // The age to which a wolf can live.
     private static final int MAX_AGE = 150;
     // The likelihood of a wolf breeding.
-    private static final double BREEDING_PROBABILITY = 0.08;
+    private static final double BREEDING_PROBABILITY = 0.03;
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 2;
     // The food value of a single deer. In effect, this is the
@@ -70,6 +70,7 @@ public class Wolf extends Animal
             giveBirth(newwolves);            
             // Move towards a source of food if found.
             Location newLocation = findFood();
+            spreadDisease();
             if(newLocation == null) { 
                 // No food found - try to move to a free location.
                 newLocation = getField().freeAdjacentLocation(getLocation());
@@ -92,6 +93,9 @@ public class Wolf extends Animal
     private void incrementAge()
     {
         age++;
+        if(isSick()){
+            age += 1;
+        }
         if(age > MAX_AGE) {
             setDead();
         }

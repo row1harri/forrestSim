@@ -21,19 +21,15 @@ public class Simulator
     // The probability that a fox will be created in any given grid position.
     private static final double FOX_CREATION_PROBABILITY = 0.01;
     // The probability that a rabbit will be created in any given grid position.
-    private static final double RABBIT_CREATION_PROBABILITY = 0.3;   
+    private static final double RABBIT_CREATION_PROBABILITY = 0.2;   
     // The probability that a eagle will be created in any given grid position.
     private static final double Eagle_CREATION_PROBABILITY = 0.03;
     // The probability that a wolf will be created in any given grid position.
     private static final double WOLF_CREATION_PROBABILITY = 0.03;
     // The probability that a deer will be created in any given grid position.
-    private static final double DEER_CREATION_PROBABILITY = 0.09;
+    private static final double DEER_CREATION_PROBABILITY = 0.1;
     // The probability that a plant will be created in any given grid position.
-    private static final double PLANT_CREATION_PROBABILITY = 0.0;
-    
-    
-    
-
+    private static final double PLANT_CREATION_PROBABILITY = 0.1;
 
     // List of animals in the field.
     private List<Animal> animals;
@@ -70,6 +66,7 @@ public class Simulator
         }
         
         animals = new ArrayList<>();
+        plants = new ArrayList<>();
         field = new Field(depth, width);
 
         // Create a view of the state of each location in the field.
@@ -103,7 +100,7 @@ public class Simulator
     {
         for(int step = 1; step <= numSteps && view.isViable(field); step++) {
             simulateOneStep();
-            delay(60);   // uncomment this to run more slowly
+            // delay(60);   // uncomment this to run more slowly
         }
     }
     
@@ -141,6 +138,7 @@ public class Simulator
     {
         step = 0;
         animals.clear();
+        plants.clear();
         populate();
         
         // Show the starting state in the view.
@@ -211,10 +209,6 @@ public class Simulator
     private void changeTimeOfDay(){
         if ((step-20) % 20==0){
             isDay = !isDay; 
-            if (isDay){
-            System.out.println("day");
-            }
-            else {System.out.println("night");}
         }   
     }
     

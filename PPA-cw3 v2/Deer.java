@@ -1,6 +1,6 @@
 import java.util.List;
 import java.util.Random;
-
+import java.util.Iterator;
 /**
  * A simple model of a deer.
  * deers age, move, breed, and die.
@@ -17,17 +17,19 @@ public class Deer extends Animal
     // The age to which a deer can live.
     private static final int MAX_AGE = 40;
     // The likelihood of a deer breeding.
-    private static final double BREEDING_PROBABILITY = 0.07;
+    private static final double BREEDING_PROBABILITY = 0.08;
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 3;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
-    
+    // number of steps a rabbit can go before it has to eat again.
+    private static final int PLANT_FOOD_VALUE =300;
     // Individual characteristics (instance fields).
     
     // The deer's age.
     private int age;
-
+    // The rabbit's food level, which is increased by eating plants.
+    private int foodLevel;
     /**
      * Create a new deer. A deer may be created with age
      * zero (a new born) or with a random age.
@@ -42,6 +44,10 @@ public class Deer extends Animal
         age = 0;
         if(randomAge) {
             age = rand.nextInt(MAX_AGE);
+            foodLevel = rand.nextInt(PLANT_FOOD_VALUE);
+        }
+        else {
+            foodLevel = PLANT_FOOD_VALUE;
         }
     }
     
@@ -50,23 +56,30 @@ public class Deer extends Animal
      * around. Sometimes it will breed or die of old age.
      * @param newdeers A list to return newly born deers.
      */
-    public void act(List<Animal> newDeers)
+    public void act(List<Animal> newDeer)
     {
         incrementAge();
         if(!getIsSleeping()){
-        if(isAlive()) {
-            giveBirth(newDeers);            
-            // Try to move into a free location.
-            Location newLocation = getField().freeAdjacentLocation(getLocation());
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
+            incrementHunger();
+            if(isAlive()) {
+                giveBirth(newDeer);            
+                // Move towards a source of food if found.
+                Location newLocation = findFood();
+                spreadDisease();
+                if(newLocation == null) { 
+                    // No food found - try to move to a free location.
+                    newLocation = getField().freeAdjacentLocation(getLocation());
+                }
+                // See if it was possible to move.
+                if(newLocation != null) {
+                    setLocation(newLocation);
+                }
+                else {
+                    // Overcrowding.
+                    setDead();
+                }
             }
         }
-    }
     }
 
     /**
@@ -76,7 +89,21 @@ public class Deer extends Animal
     private void incrementAge()
     {
         age++;
+        if(isSick()){
+            age += 1;
+        }
         if(age > MAX_AGE) {
+            setDead();
+        }
+    }
+    
+        /**
+     * Make this fox more hungry. This could result in the fox's death.
+     */
+    private void incrementHunger()
+    {
+        foodLevel--;
+        if(foodLevel <= 0) {
             setDead();
         }
     }
@@ -121,5 +148,31 @@ public class Deer extends Animal
     private boolean canBreed()
     {
         return age >= BREEDING_AGE;
+    }
+    
+     /**
+     * Look for plants adjacent to the current location.
+     * Only the first live plant is eaten.
+     * @return Where food was found, or null if it wasn't.
+     */
+    private Location findFood()
+    {
+        
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        while(it.hasNext()) {
+            Location where = it.next();
+            Object object = field.getObjectAt(where);
+            if(object instanceof Plant) {
+                Plant plant = (Plant) object;
+                if(plant.isEatable()) { 
+                    plant.setAsEaten();
+                    foodLevel = PLANT_FOOD_VALUE;
+                    return where;
+                }
+            }
+        }
+        return null;
     }
 }

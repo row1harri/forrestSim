@@ -22,12 +22,15 @@ public class Rabbit extends Animal
     private static final int MAX_LITTER_SIZE = 8;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
+    // number of steps a rabbit can go before it has to eat again.
+    private static final int PLANT_FOOD_VALUE =200;
     
     // Individual characteristics (instance fields).
     
     // The rabbit's age.
     private int age;
-
+    // The rabbit's food level, which is increased by eating plants.
+    private int foodLevel;
     /**
      * Create a new rabbit. A rabbit may be created with age
      * zero (a new born) or with a random age.
@@ -42,6 +45,10 @@ public class Rabbit extends Animal
         age = 0;
         if(randomAge) {
             age = rand.nextInt(MAX_AGE);
+            foodLevel = rand.nextInt(PLANT_FOOD_VALUE);
+        }
+        else {
+            foodLevel = PLANT_FOOD_VALUE;
         }
     }
     
@@ -54,19 +61,27 @@ public class Rabbit extends Animal
     {
         incrementAge();
         if(!getIsSleeping()){
-        if(isAlive()) {
-            giveBirth(newRabbits);            
-            // Try to move into a free location.
-            Location newLocation = getField().freeAdjacentLocation(getLocation());
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
+            incrementHunger();
+            if(isAlive()) {
+                giveBirth(newRabbits);            
+                // Move towards a source of food if found.
+                Location newLocation = findFood();
+                spreadDisease();
+                if(newLocation == null) { 
+                    // No food found - try to move to a free location.
+                    newLocation = getField().freeAdjacentLocation(getLocation());
+                }
+                // See if it was possible to move.
+                if(newLocation != null) {
+                    setLocation(newLocation);
+                }
+                else {
+                    // Overcrowding.
+                    setDead();
+                }
             }
         }
-    }
+    
     }
 
     /**
@@ -76,7 +91,21 @@ public class Rabbit extends Animal
     private void incrementAge()
     {
         age++;
+        if(isSick()){
+            age += 1;
+        }
         if(age > MAX_AGE) {
+            setDead();
+        }
+    }
+    
+        /**
+     * Make this fox more hungry. This could result in the fox's death.
+     */
+    private void incrementHunger()
+    {
+        foodLevel--;
+        if(foodLevel <= 0) {
             setDead();
         }
     }
@@ -134,8 +163,6 @@ public class Rabbit extends Animal
         return births;
     }
     
-    
-    
     /**
      * A rabbit can breed if it has reached the breeding age.
      * @return true if the rabbit can breed, false otherwise.
@@ -143,5 +170,32 @@ public class Rabbit extends Animal
     private boolean canBreed()
     {
         return age >= BREEDING_AGE;
+    }
+    
+    /**
+     * Look for plants adjacent to the current location.
+     * Only the first live plant is eaten.
+     * @return Where food was found, or null if it wasn't.
+     */
+    private Location findFood()
+    {
+        if(foodLevel<= (PLANT_FOOD_VALUE/2)){
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        while(it.hasNext()) {
+            Location where = it.next();
+            Object object = field.getObjectAt(where);
+            if(object instanceof Plant) {
+                Plant plant = (Plant) object;
+                if(plant.isEatable()) { 
+                    plant.setAsEaten();
+                    foodLevel = PLANT_FOOD_VALUE;
+                    return where;
+                }
+            }
+        }
+    }
+        return null;
     }
 }
